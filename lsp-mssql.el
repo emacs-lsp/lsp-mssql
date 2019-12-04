@@ -5,7 +5,7 @@
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
 ;; Keywords: data, languages
-;; Package-Requires: ((emacs "25.1") (lsp-mode "6.2") (dash "2.14.1") (f "0.20.0") (ht "2.0") (lsp-treemacs "0.1"))
+;; Package-Requires: (     )
 ;; URL: https://github.com/emacs-lsp/lsp-mssql
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@
   '("MicrosoftSqlToolsServiceLayer.exe" "MicrosoftSqlToolsServiceLayer" "MicrosoftSqlToolsServiceLayer.dll"))
 
 (declare-function org-mode "ext:org" ())
-(declare-function org-show-all "ext:org" ())
+(declare-function org-show-all "ext:org" (a))
 (declare-function org-table-align "ext:org-table" ())
 
 (defvar lsp-mssql--connection-name->session-id (ht))
