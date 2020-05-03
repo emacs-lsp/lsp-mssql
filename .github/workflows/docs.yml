@@ -17,7 +17,7 @@ jobs:
 
       - name: MkDocs
         run: |
-          cp -rf images docs
+          cp -rf screenshots docs
           docker run --rm -v ${PWD}:/docs squidfunk/mkdocs-material -- build
 
       - name: Deploy
