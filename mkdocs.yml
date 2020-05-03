@@ -5,15 +5,15 @@ extra_css:
 
 theme:
   name: material
-  logo: screenshots/logo.png
-  favicon: screenshots/logo.png
+  logo: images/logo.png
+  favicon: images/logo.png
   icon:
     repo: fontawesome/brands/github
 
 extra:
   social:
     - icon: fontawesome/brands/github-alt
-      link: https://github.com/emacs-lsp
+      link: https://github.com/emacs-lsp/lsp-mssql
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/yonchovski
     - icon: fontawesome/brands/gitter
