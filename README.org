@@ -1,4 +1,5 @@
 [[https://melpa.org/#/lsp-mssql][file:https://melpa.org/packages/lsp-mssql-badge.svg]]
+[[https://github.com/emacs-lsp/lsp-mssql/actions/workflows/test.yml][file:https://github.com/emacs-lsp/lsp-mssql/actions/workflows/test.yml/badge.svg]]
 
 * lsp-mode mssql client
   Emacs client for [[https://github.com/microsoft/sqltoolsservice][sqltoolsservice]] (port of [[https://github.com/microsoft/vscode-mssql/][vscode-mssql]])
