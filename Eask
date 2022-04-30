@@ -5,6 +5,7 @@
 (package-file "lsp-mssql.el")
 
 (source "gnu")
+(source "melpa")
 
 (depends-on "emacs" "25.1")
 (depends-on "lsp-mode")

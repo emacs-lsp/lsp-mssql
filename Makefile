@@ -23,4 +23,4 @@ lint:
 clean:
 	$(EASK) clean-all
 
-.PHONY : test compile checkdoc lint clean tag
+.PHONY: test compile checkdoc lint clean
