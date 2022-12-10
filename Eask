@@ -2,7 +2,12 @@
          "0.1"
          "MSSQL LSP bindings")
 
+(website-url "https://github.com/emacs-lsp/lsp-mssql")
+(keywords "data" "languages")
+
 (package-file "lsp-mssql.el")
+
+(script "test" "echo \"Error: no test specified\" && exit 1")
 
 (source "gnu")
 (source "melpa")
