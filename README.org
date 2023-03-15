@@ -29,6 +29,23 @@
    connection is established the current buffer will be associated with the SQL
    Server and the completion and the query exection will be performed against
    that server.
+
+   =lsp-mssql= also supports Azure MSSQL.  To connect using Service
+   Principals, you need to supply =:authenticationType=:
+
+#+begin_src emacs-lisp
+  (setq lsp-mssql-connections
+        [(;; ODBC Driver for Azure
+          :driver "{ODBC Driver 17 for SQL Server}"
+          :server "SERVER-NAME.database.windows.net"
+          :database "DATABASE-NAME"
+          ;; Service Principal goes to :user
+          :user "fc38d296-4aab-44b4-b74d-609b0de8e9cb"
+          :password "PASSWORD"
+          ;; Use Active Directory
+          :authenticationType "ActiveDirectoryServicePrincipal")])
+#+end_src
+
 ** Commands
    - Editor
      - =lsp-mssql-connect= - connect the editor to =MSSQL server=.
