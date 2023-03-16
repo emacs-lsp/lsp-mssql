@@ -264,11 +264,11 @@ PARAMS the params."
                                         (- row-count loaded-index)
                                       to-load)))
                        `(:ownerUri ,owner-uri
-                                   :resultSetIndex ,id
-                                   :rowsCount ,to-load
-                                   :rowsStartIndex ,(prog1 loaded-index
-                                                      (setf loaded-index (+ loaded-index to-load)))
-                                   :batchIndex ,batchId))
+                         :resultSetIndex ,id
+                         :rowsCount ,to-load
+                         :rowsStartIndex ,(prog1 loaded-index
+                                            (setf loaded-index (+ loaded-index to-load)))
+                         :batchIndex ,batchId))
                    (lsp--info "All items are loaded")
                    nil)))
       (when-let ((params (subset-params)))
