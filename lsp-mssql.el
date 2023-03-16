@@ -59,6 +59,11 @@
 (defvar-local lsp-mssql-buffer-status nil
   "SQL buffer status.")
 
+(defvar-local lsp-mssql-result-metadata nil
+  "Metadata associated with result set.
+
+This is stored in the result buffer as buffer local value.")
+
 (put 'lsp-mssql-buffer-status 'risky-local-variable t)
 (add-to-list 'global-mode-string (list '(t lsp-mssql-buffer-status)))
 
@@ -243,11 +248,16 @@ PARAMS the params."
   "Result set complete handler.
 WORKSPACE is the active workspace.
 PARAMS the params."
-  (-let* ((marker (lsp-mssql-with-result-buffer
+  (-let* ((column-info (gethash "columnInfo" (gethash "resultSetSummary" params)))
+          (result-metadata (seq-map (-lambda ((&hash "columnName" name "dataTypeName" type))
+                                      (list name :name name :type type))
+                                    column-info))
+          (marker (lsp-mssql-with-result-buffer
+                   (setq-local lsp-mssql-result-metadata result-metadata)
                    (goto-char (point-max))
                    (insert (format "|%s|\n"(s-join "|" (seq-map (-lambda ((&hash "columnName" name))
                                                                   name)
-                                                                (gethash "columnInfo" (gethash "resultSetSummary" params))))))
+                                                                column-info))))
                    (insert "|-")
                    (org-table-align)
                    (goto-char (point-at-eol))
@@ -264,11 +274,11 @@ PARAMS the params."
                                         (- row-count loaded-index)
                                       to-load)))
                        `(:ownerUri ,owner-uri
-                                   :resultSetIndex ,id
-                                   :rowsCount ,to-load
-                                   :rowsStartIndex ,(prog1 loaded-index
-                                                      (setf loaded-index (+ loaded-index to-load)))
-                                   :batchIndex ,batchId))
+                         :resultSetIndex ,id
+                         :rowsCount ,to-load
+                         :rowsStartIndex ,(prog1 loaded-index
+                                            (setf loaded-index (+ loaded-index to-load)))
+                         :batchIndex ,batchId))
                    (lsp--info "All items are loaded")
                    nil)))
       (when-let ((params (subset-params)))
@@ -306,10 +316,9 @@ PARAMS the params."
                            (define-key [mouse-2] 'push-button))
                  'help-echo "mouse-2, M-RET: Load more items."))
               (insert "\n\n")
-              (org-mode)
               (goto-char (marker-position marker))
               (org-table-align)
-              (pop-to-buffer (current-buffer))))
+              (display-buffer (current-buffer))))
            :mode 'detached))))))
 
 (defun lsp-mssql--batch-complete (_workspace _params)
@@ -344,7 +353,7 @@ PARAMS batch handler params."
      ;;                                                         ("character" endColumn))))))
      ;; (insert "#+END_SRC\n\n")
      )
-   (display-buffer-in-side-window  (current-buffer) '((side . bottom)))))
+   (display-buffer (current-buffer))))
 
 (defun lsp-mssql--connection-changed (_workspace _params)
   "Hanler for batch complete.")
@@ -435,6 +444,11 @@ PARAMS batch handler params."
    (org-mode)
    (erase-buffer))
   (lsp-request "query/executeDocumentSelection" (list :ownerUri (lsp--buffer-uri))))
+
+(defun lsp-mssql-cancel ()
+  "Cancel the current query."
+  (interactive)
+  (lsp-request "query/cancel" (list :ownerUri (lsp--buffer-uri))))
 
 
 ;; object explorer
