@@ -436,6 +436,11 @@ PARAMS batch handler params."
    (erase-buffer))
   (lsp-request "query/executeDocumentSelection" (list :ownerUri (lsp--buffer-uri))))
 
+(defun lsp-mssql-cancel ()
+  "Cancel the current query."
+  (interactive)
+  (lsp-request "query/cancel" (list :ownerUri (lsp--buffer-uri))))
+
 
 ;; object explorer
 
