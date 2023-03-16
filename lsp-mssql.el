@@ -309,7 +309,7 @@ PARAMS the params."
               (org-mode)
               (goto-char (marker-position marker))
               (org-table-align)
-              (pop-to-buffer (current-buffer))))
+              (display-buffer (current-buffer))))
            :mode 'detached))))))
 
 (defun lsp-mssql--batch-complete (_workspace _params)
@@ -344,7 +344,7 @@ PARAMS batch handler params."
      ;;                                                         ("character" endColumn))))))
      ;; (insert "#+END_SRC\n\n")
      )
-   (display-buffer-in-side-window  (current-buffer) '((side . bottom)))))
+   (display-buffer (current-buffer))))
 
 (defun lsp-mssql--connection-changed (_workspace _params)
   "Hanler for batch complete.")
