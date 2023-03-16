@@ -59,6 +59,11 @@
 (defvar-local lsp-mssql-buffer-status nil
   "SQL buffer status.")
 
+(defvar-local lsp-mssql-result-metadata nil
+  "Metadata associated with result set.
+
+This is stored in the result buffer as buffer local value.")
+
 (put 'lsp-mssql-buffer-status 'risky-local-variable t)
 (add-to-list 'global-mode-string (list '(t lsp-mssql-buffer-status)))
 
@@ -243,11 +248,16 @@ PARAMS the params."
   "Result set complete handler.
 WORKSPACE is the active workspace.
 PARAMS the params."
-  (-let* ((marker (lsp-mssql-with-result-buffer
+  (-let* ((column-info (gethash "columnInfo" (gethash "resultSetSummary" params)))
+          (result-metadata (seq-map (-lambda ((&hash "columnName" name "dataTypeName" type))
+                                      (list name :name name :type type))
+                                    column-info))
+          (marker (lsp-mssql-with-result-buffer
+                   (setq-local lsp-mssql-result-metadata result-metadata)
                    (goto-char (point-max))
                    (insert (format "|%s|\n"(s-join "|" (seq-map (-lambda ((&hash "columnName" name))
                                                                   name)
-                                                                (gethash "columnInfo" (gethash "resultSetSummary" params))))))
+                                                                column-info))))
                    (insert "|-")
                    (org-table-align)
                    (goto-char (point-at-eol))
@@ -306,7 +316,6 @@ PARAMS the params."
                            (define-key [mouse-2] 'push-button))
                  'help-echo "mouse-2, M-RET: Load more items."))
               (insert "\n\n")
-              (org-mode)
               (goto-char (marker-position marker))
               (org-table-align)
               (display-buffer (current-buffer))))
