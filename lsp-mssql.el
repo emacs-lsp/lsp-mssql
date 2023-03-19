@@ -247,6 +247,21 @@ PARAMS the params."
                        (apply #'concat))))
        (s-join "|\n")))
 
+(defun lsp-mssql--replace-overlay-text (ov string)
+  "Replace text inside overlay OV with STRING."
+  (let ((start (overlay-start ov)))
+    (save-excursion
+      ;; This is a bit silly, but this way we don't have to make new
+      ;; buttons, we just replace the text inside an exisiting button.
+      ;; We can't insert at the start of the overlay because that
+      ;; would only push the existing one away, not inserting the new
+      ;; text into it.
+      (goto-char (1+ start))
+      (insert string)
+      (delete-region (point) (overlay-end ov))
+      (goto-char (1+ start))
+      (delete-char -1))))
+
 (defun lsp-mssql--result-set-complete (workspace params)
   "Result set complete handler.
 WORKSPACE is the active workspace.
@@ -283,7 +298,21 @@ PARAMS the params."
                                             (setf loaded-index (+ loaded-index to-load)))
                          :batchIndex ,batchId))
                    (lsp--info "All items are loaded")
-                   nil)))
+                   nil))
+                (render-load-more
+                 ()
+                 (if (= loaded-index row-count)
+                     (progn
+                       (when (looking-at-p "^Load")
+                         (delete-region (line-beginning-position) (line-end-position)))
+                       (insert "|-")
+                       (org-table-align)
+                       (end-of-line))
+                   (if (looking-at-p "^Load")
+                       (lsp-mssql--replace-overlay-text
+                        (car (overlays-at (point)))
+                        (format "Load %s more... (%s/%s)" to-load loaded-index row-count))
+                     (insert (format "Load %s more... (%s/%s)" to-load loaded-index row-count))))))
       (when-let ((params (subset-params)))
         (with-lsp-workspace workspace
           (lsp-request-async
@@ -297,7 +326,7 @@ PARAMS the params."
               (setq more-items-marker (copy-marker (point)))
               (insert "\n")
               (let ((start (point)))
-                (insert (format "Load %s more... (%s/%s)" to-load loaded-index row-count))
+                (render-load-more)
                 (make-button
                  start (point)
                  'action (lambda (&rest _)
@@ -312,7 +341,9 @@ PARAMS the params."
                                    (goto-char (1- (marker-position more-items-marker)))
                                    (insert "\n")
                                    (insert (lsp-mssql--render-table result))
-                                   (org-table-align)))
+                                   (org-table-align)
+                                   (forward-line 1)
+                                   (render-load-more)))
                                 :mode 'detached))))
                  'keymap (-doto (make-sparse-keymap)
                            (define-key [M-return] 'push-button)
