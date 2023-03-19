@@ -199,8 +199,11 @@ PARAMS Session created handler."
 
 (defmacro lsp-mssql-with-result-buffer (&rest body)
   "Evaluate BODY in result buffer."
+  (declare (debug (body)))
   `(with-current-buffer (get-buffer-create "*SQL Results*")
-     (prog1 (save-excursion ,@body)
+     (prog1 (save-excursion
+              (let ((inhibit-read-only t))
+                ,@body))
        (org-show-all '(headings blocks)))))
 
 (defun lsp-mssql--connection-complete (_workspace params)
@@ -423,8 +426,10 @@ PARAMS batch handler params."
   "Execute selected region START to END."
   (interactive "r")
   (lsp-mssql-with-result-buffer
+   (read-only-mode -1)
    (org-mode)
-   (erase-buffer))
+   (erase-buffer)
+   (read-only-mode 1))
   (-let (((&plist :line start-line
                   :character start-character) (lsp--point-to-position start))
          ((&plist :line end-line
@@ -441,8 +446,10 @@ PARAMS batch handler params."
   "Execute the SQL code in the buffer."
   (interactive)
   (lsp-mssql-with-result-buffer
+   (read-only-mode -1)
    (org-mode)
-   (erase-buffer))
+   (erase-buffer)
+   (read-only-mode 1))
   (lsp-request "query/executeDocumentSelection" (list :ownerUri (lsp--buffer-uri))))
 
 (defun lsp-mssql-cancel ()
