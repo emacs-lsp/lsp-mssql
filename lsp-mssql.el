@@ -262,6 +262,11 @@ PARAMS the params."
       (goto-char (1+ start))
       (delete-char -1))))
 
+(defvar lsp-mssql-after-render-table-hook nil
+  "Hook called after data is rendered in the result buffer.
+
+When the hook is called, the point is at the end of the buffer.")
+
 (defun lsp-mssql--result-set-complete (workspace params)
   "Result set complete handler.
 WORKSPACE is the active workspace.
@@ -343,7 +348,8 @@ PARAMS the params."
                                    (insert (lsp-mssql--render-table result))
                                    (org-table-align)
                                    (forward-line 1)
-                                   (render-load-more)))
+                                   (render-load-more)
+                                   (run-hooks 'lsp-mssql-after-render-table-hook)))
                                 :mode 'detached))))
                  'keymap (-doto (make-sparse-keymap)
                            (define-key [M-return] 'push-button)
@@ -352,7 +358,8 @@ PARAMS the params."
               (insert "\n\n")
               (goto-char (marker-position marker))
               (org-table-align)
-              (display-buffer (current-buffer))))
+              (display-buffer (current-buffer))
+              (run-hooks 'lsp-mssql-after-render-table-hook)))
            :mode 'detached))))))
 
 (defun lsp-mssql--batch-complete (_workspace _params)
