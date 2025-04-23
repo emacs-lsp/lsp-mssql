@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "lsp-mssql"
          "0.1"
          "MSSQL LSP bindings")
