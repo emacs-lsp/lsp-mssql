@@ -1,6 +1,7 @@
 ;;; lsp-mssql.el --- MSSQL LSP bindings              -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Ivan Yonchovski
+;; Copyright (C) 2019-2025  emacs-lsp maintainers
 ;; Version: 0.1
 
 ;; Author: Ivan Yonchovski <yyoncho@gmail.com>
