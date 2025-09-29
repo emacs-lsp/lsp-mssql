@@ -46,7 +46,7 @@
   :type 'number)
 
 (defconst lsp-mssql-server-download-url
-  "https://download.microsoft.com/download/c/2/f/c9857f58-e569-4677-ad24-f180e83a8252/microsoft.sqltools.servicelayer-%s")
+  "https://github.com/microsoft/sqltoolsservice/releases/download/5.0.20250910.2/Microsoft.SqlTools.ServiceLayer-%s")
 
 (defconst lsp-mssql-executable-files
   '("MicrosoftSqlToolsServiceLayer.exe" "MicrosoftSqlToolsServiceLayer" "MicrosoftSqlToolsServiceLayer.dll"))
@@ -111,9 +111,9 @@ Will not do anything should the file exist already."
   "Download mssql server.
 Uses `powershell' on windows and `tar' on Linux to extract the server binary."
   (interactive)
-  (let* ((result (cond ((eq system-type 'darwin)  "osx-x64-netcoreapp2.2.tar.gz")
-                       ((eq system-type 'gnu/linux)  "rhel-x64-netcoreapp2.2.tar.gz")
-                       ((eq system-type 'windows-nt) "win-x64-netcoreapp2.2.zip")
+  (let* ((result (cond ((eq system-type 'darwin)  "osx-arm64-net8.0.tar.gz")
+                       ((eq system-type 'gnu/linux)  "linux-x64-net8.0.tar.gz")
+                       ((eq system-type 'windows-nt) "win-x64-net8.0.zip")
                        (t (error (format "Unsupported system: %s" system-type)))))
          (download-location (f-join temporary-file-directory result))
          (url (format lsp-mssql-server-download-url result)))
