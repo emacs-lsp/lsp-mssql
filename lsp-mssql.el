@@ -29,6 +29,7 @@
 
 (require 'lsp-mode)
 (require 'lsp-treemacs)
+(require 'lsp-treemacs-generic)
 (require 'gnutls)
 
 (defgroup lsp-mssql nil
@@ -205,7 +206,7 @@ PARAMS Session created handler."
      (prog1 (save-excursion
               (let ((inhibit-read-only t))
                 ,@body))
-       (org-show-all '(headings blocks)))))
+       (org-fold-show-all '(headings blocks)))))
 
 (defun lsp-mssql--connection-complete (_workspace params)
   "Connection completed handler.
@@ -367,7 +368,7 @@ PARAMS the params."
   "Hanler for batch complete.")
 
 (defun lsp-mssql--complete (_workspace _params)
-  "Hanler for complete."
+  "Handler for complete."
   (lsp-mssql-with-result-buffer))
 
 (defvar-local lsp-mssql--markers (ht))
@@ -663,14 +664,19 @@ NODES - all nodes."
   "Show explorer.
 TREE is the data to display, TITLE will be used for the
 modeline in the result buffer."
-  (with-current-buffer (get-buffer-create "*SQL Object explorer*")
-    (lsp-treemacs-initialize)
-    (setq-local lsp-treemacs-tree tree)
-    (setq-local face-remapping-alist '((button . default)))
-    (lsp-treemacs-generic-refresh)
-    (display-buffer-in-side-window (current-buffer) '((side . right)))
-    (setq-local mode-name title)
-    (lsp-mssql-object-explorer-mode)))
+    (lsp-treemacs-render tree title 0
+				"*SQL Object explorer*" nil)
+    (with-current-buffer "*SQL Object explorer*"
+	(display-buffer-in-side-window (current-buffer) '((side . right)))
+	(lsp-mssql-object-explorer-mode)))
+
+;; -  (with-current-buffer (get-buffer-create "*SQL Object explorer*")
+;; -    (lsp-treemacs-initialize)
+;; -    (setq-local lsp-treemacs-tree tree)
+;; -    (setq-local face-remapping-alist '((button . default)))
+;; -    (lsp-treemacs-generic-refresh);; -
+;; -    (setq-local mode-name title)
+
 
 
 
