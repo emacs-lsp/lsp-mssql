@@ -42,7 +42,7 @@
   :type 'directory)
 
 (defcustom lsp-mssql-default-batch-size 10
-  "Default number of items to oad per query."
+  "Default number of items to load per query."
   :type 'number)
 
 (defconst lsp-mssql-server-download-url
