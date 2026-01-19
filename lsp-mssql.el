@@ -29,6 +29,7 @@
 
 (require 'lsp-mode)
 (require 'lsp-treemacs)
+(require 'lsp-treemacs-generic)
 (require 'gnutls)
 
 (defgroup lsp-mssql nil
@@ -46,7 +47,7 @@
   :type 'number)
 
 (defconst lsp-mssql-server-download-url
-  "https://download.microsoft.com/download/c/2/f/c9857f58-e569-4677-ad24-f180e83a8252/microsoft.sqltools.servicelayer-%s")
+  "https://github.com/microsoft/sqltoolsservice/releases/download/5.0.20250910.2/Microsoft.SqlTools.ServiceLayer-%s")
 
 (defconst lsp-mssql-executable-files
   '("MicrosoftSqlToolsServiceLayer.exe" "MicrosoftSqlToolsServiceLayer" "MicrosoftSqlToolsServiceLayer.dll"))
@@ -111,9 +112,9 @@ Will not do anything should the file exist already."
   "Download mssql server.
 Uses `powershell' on windows and `tar' on Linux to extract the server binary."
   (interactive)
-  (let* ((result (cond ((eq system-type 'darwin)  "osx-x64-netcoreapp2.2.tar.gz")
-                       ((eq system-type 'gnu/linux)  "rhel-x64-netcoreapp2.2.tar.gz")
-                       ((eq system-type 'windows-nt) "win-x64-netcoreapp2.2.zip")
+  (let* ((result (cond ((eq system-type 'darwin)  "osx-arm64-net8.0.tar.gz")
+                       ((eq system-type 'gnu/linux)  "linux-x64-net8.0.tar.gz")
+                       ((eq system-type 'windows-nt) "win-x64-net8.0.zip")
                        (t (error (format "Unsupported system: %s" system-type)))))
          (download-location (f-join temporary-file-directory result))
          (url (format lsp-mssql-server-download-url result)))
@@ -205,7 +206,7 @@ PARAMS Session created handler."
      (prog1 (save-excursion
               (let ((inhibit-read-only t))
                 ,@body))
-       (org-show-all '(headings blocks)))))
+       (org-fold-show-all '(headings blocks)))))
 
 (defun lsp-mssql--connection-complete (_workspace params)
   "Connection completed handler.
@@ -367,7 +368,7 @@ PARAMS the params."
   "Hanler for batch complete.")
 
 (defun lsp-mssql--complete (_workspace _params)
-  "Hanler for complete."
+  "Handler for complete."
   (lsp-mssql-with-result-buffer))
 
 (defvar-local lsp-mssql--markers (ht))
@@ -663,14 +664,19 @@ NODES - all nodes."
   "Show explorer.
 TREE is the data to display, TITLE will be used for the
 modeline in the result buffer."
-  (with-current-buffer (get-buffer-create "*SQL Object explorer*")
-    (lsp-treemacs-initialize)
-    (setq-local lsp-treemacs-tree tree)
-    (setq-local face-remapping-alist '((button . default)))
-    (lsp-treemacs-generic-refresh)
-    (display-buffer-in-side-window (current-buffer) '((side . right)))
-    (setq-local mode-name title)
-    (lsp-mssql-object-explorer-mode)))
+    (lsp-treemacs-render tree title 0
+				"*SQL Object explorer*" nil)
+    (with-current-buffer "*SQL Object explorer*"
+	(display-buffer-in-side-window (current-buffer) '((side . right)))
+	(lsp-mssql-object-explorer-mode)))
+
+;; -  (with-current-buffer (get-buffer-create "*SQL Object explorer*")
+;; -    (lsp-treemacs-initialize)
+;; -    (setq-local lsp-treemacs-tree tree)
+;; -    (setq-local face-remapping-alist '((button . default)))
+;; -    (lsp-treemacs-generic-refresh);; -
+;; -    (setq-local mode-name title)
+
 
 
 
