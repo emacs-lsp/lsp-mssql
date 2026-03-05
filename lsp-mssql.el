@@ -73,17 +73,21 @@ This is stored in the result buffer as buffer local value.")
   (cond
    ((eq system-type 'windows-nt)
     ;; on windows, we attempt to use powershell v5+, available on Windows 10+
-    (let ((powershell-version (substring
-                               (shell-command-to-string "powershell -command \"(Get-Host).Version.Major\"")
-                               0 -1)))
-      (if (>= (string-to-number powershell-version) 5)
-          (call-process "powershell"
+    (let* ((powershell-version (substring
+                               (shell-command-to-string "powershell -noprofile -command \"(Get-Host).Version.Major\"")
+                               0 -1))
+		  (pwsh-version (substring
+                               (shell-command-to-string "pwsh -noprofile -command \"(Get-Host).Version.Major\"")
+                               0 -1))
+		  ;; If PowerShell v7+ is available, use that
+		  (powershell-binary (if (> (string-to-number pwsh-version) 0) "pwsh" "powershell")))
+      (if (or (string= powershell-binary "pwsh") (>= (string-to-number powershell-version) 5))
+          (call-process powershell-binary
                         nil
                         nil
                         nil
                         "-command"
-                        (concat "add-type -assembly system.io.compression.filesystem;"
-                                "[io.compression.zipfile]::ExtractToDirectory(\"" filename "\", \"" target-dir "\")"))
+                        (concat "-noprofile Expand-Archive \"" filename "\" \"" target-dir "\""))
 
         (message (concat "lsp-csharp: for automatic server installation procedure"
                          " to work on Windows you need to have powershell v5+ installed")))))
