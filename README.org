@@ -15,7 +15,7 @@
   (add-hook 'sql-mode-hook 'lsp)
 #+END_SRC
 ** Configuration
-   Confgure the connections.
+   Configure the connections.
 #+BEGIN_SRC emacs-lisp
   (setq lsp-mssql-connections
         [(:server "localhost"
@@ -27,7 +27,7 @@
    whether to install the language server. Then when you are in the =sql= buffer
    do =M-x lsp-mssql-connect= which will ask you to select connection. After the
    connection is established the current buffer will be associated with the SQL
-   Server and the completion and the query exection will be performed against
+   Server and the completion and the query execution will be performed against
    that server.
 
    =lsp-mssql= also supports Azure MSSQL.  To connect using Service
