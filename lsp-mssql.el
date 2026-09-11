@@ -253,7 +253,7 @@ PARAMS the params."
   (let ((start (overlay-start ov)))
     (save-excursion
       ;; This is a bit silly, but this way we don't have to make new
-      ;; buttons, we just replace the text inside an exisiting button.
+      ;; buttons, we just replace the text inside an existing button.
       ;; We can't insert at the start of the overlay because that
       ;; would only push the existing one away, not inserting the new
       ;; text into it.
@@ -364,10 +364,10 @@ PARAMS the params."
            :mode 'detached))))))
 
 (defun lsp-mssql--batch-complete (_workspace _params)
-  "Hanler for batch complete.")
+  "Handler for batch complete.")
 
 (defun lsp-mssql--complete (_workspace _params)
-  "Hanler for complete."
+  "Handler for complete."
   (lsp-mssql-with-result-buffer))
 
 (defvar-local lsp-mssql--markers (ht))
@@ -398,7 +398,7 @@ PARAMS batch handler params."
    (display-buffer (current-buffer))))
 
 (defun lsp-mssql--connection-changed (_workspace _params)
-  "Hanler for batch complete.")
+  "Handler for batch complete.")
 
 (defun lsp-mssql--after-open-fn ()
   "After open handler."
